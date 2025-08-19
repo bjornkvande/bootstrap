@@ -10,7 +10,7 @@ elif [ "$OSTYPE" == "linux-gnu" ]; then
 
     # install developer essentials
     sudo apt update
-    sudo apt install -y git curl build-essential
+    sudo apt install -y zsh git curl build-essential
     sudo apt install -y wget gpg apt-transport-https software-properties-common
 
 
@@ -65,6 +65,18 @@ elif [ "$OSTYPE" == "linux-gnu" ]; then
         echo "Creating symlink: $link -> $target"
         ln -s "$target" "$link"
     done
+
+    # symlink the default Visual Studio Code settings file
+    VSCODE_SETTINGS_SRC="$DOTFILES_DIR/.config/Code/User/settings.json"
+    VSCODE_SETTINGS_DEST="$HOME/.config/Code/User/settings.json"
+    if [ -e "$VSCODE_SETTINGS_DEST" ] || [ -L "$VSCODE_SETTINGS_DEST" ]; then
+        echo "Backing up existing $VSCODE_SETTINGS_DEST to $VSCODE_SETTINGS_DEST.bak"
+        mv "$VSCODE_SETTINGS_DEST" "$VSCODE_SETTINGS_DEST.bak"
+    fi
+    ln -s "$VSCODE_SETTINGS_SRC" "$VSCODE_SETTINGS_DEST"
+
+    # make zsh the default shell 
+    chsh -s $(which zsh)
 
 else
     echo "Unsupported OS: $OSTYPE"
