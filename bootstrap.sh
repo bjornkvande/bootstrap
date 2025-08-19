@@ -10,7 +10,7 @@ elif [ "$OSTYPE" == "linux-gnu" ]; then
 
     # install developer essentials
     sudo apt update
-    sudo apt install -y zsh git curl build-essential
+    sudo apt install -y zsh tmux git curl build-essential
     sudo apt install -y wget gpg apt-transport-https software-properties-common
 
 
@@ -67,16 +67,21 @@ elif [ "$OSTYPE" == "linux-gnu" ]; then
     done
 
     # symlink the default Visual Studio Code settings file
-    VSCODE_SETTINGS_SRC="$DOTFILES_DIR/.config/Code/User/settings.json"
-    VSCODE_SETTINGS_DEST="$HOME/.config/Code/User/settings.json"
-    if [ -e "$VSCODE_SETTINGS_DEST" ] || [ -L "$VSCODE_SETTINGS_DEST" ]; then
-        echo "Backing up existing $VSCODE_SETTINGS_DEST to $VSCODE_SETTINGS_DEST.bak"
-        mv "$VSCODE_SETTINGS_DEST" "$VSCODE_SETTINGS_DEST.bak"
+    if [ -L "$HOME/.config/Code/User/settings.json" ]; then
+        mv "$HOME/.config/Code/User/settings.json" "$HOME/.config/Code/User/settings.json.bak"
     fi
-    ln -s "$VSCODE_SETTINGS_SRC" "$VSCODE_SETTINGS_DEST"
+    ln -s "$DOTFILES_DIR/config/Code/User/settings.json" "$HOME/.config/Code/User/settings.json"
 
     # make zsh the default shell 
-    chsh -s $(which zsh)
+    if [ "$SHELL" != "$(which zsh)" ]; then
+        echo "Changing default shell to zsh..."
+        chsh -s "$(which zsh)"
+    else
+        echo "Default shell is already zsh."
+    fi
+
+    # maybe: install jest and gulp globally 
+    # maybe: install cypress globally
 
 else
     echo "Unsupported OS: $OSTYPE"
