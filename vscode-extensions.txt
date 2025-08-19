@@ -1,0 +1,14 @@
+akamud.vscode-theme-onedark
+alefragnani.bookmarks
+bradlc.vscode-tailwindcss
+dbaeumer.vscode-eslint
+denoland.vscode-deno
+donjayamanne.githistory
+esbenp.prettier-vscode
+github.copilot
+github.copilot-chat
+monokai.theme-monokai-pro-vscode
+pkief.material-icon-theme
+ritwickdey.liveserver
+unifiedjs.vscode-mdx
+vscode-icons-team.vscode-icons
