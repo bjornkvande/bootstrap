@@ -29,6 +29,9 @@ elif [ "$OSTYPE" == "linux-gnu" ]; then
     nvm alias default 16
     nvm use default
 
+    # make sure we can run trailguide on https 
+    sudo setcap 'cap_net_bind_service=+ep' $(which node)
+
 
     # Install VS Code
     echo "Adding Microsoft repository for VS Code..."
