@@ -59,6 +59,7 @@ elif [ "$OSTYPE" == "linux-gnu" ]; then
         [".profile"]="$DOTFILES_DIR/.profile"
         [".zprofile"]="$DOTFILES_DIR/.zprofile"
         [".zshrc"]="$DOTFILES_DIR/.zshrc"
+        [".tmux.conf"]="$DOTFILES_DIR/config/tmux.conf"
     )
     for file in "${!FILES_TO_LINK[@]}"; do
         target="${FILES_TO_LINK[$file]}"
