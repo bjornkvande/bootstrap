@@ -120,6 +120,9 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+# direnv is used to set project-specific environment variables such as credentials
+eval "$(direnv hook bash)"
+
 # Load global .env if it exists
 if [ -f "$HOME/.env" ]; then
   set -a	# automatically export all variables to all programs
