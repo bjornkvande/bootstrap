@@ -23,7 +23,7 @@ elif [ "$OSTYPE" == "linux-gnu" ]; then
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    
+
     # currently we use node 16 as our default version globally 
     nvm install 16
     nvm alias default 16
@@ -100,8 +100,12 @@ elif [ "$OSTYPE" == "linux-gnu" ]; then
     sudo systemctl enable mongod
     sudo systemctl start mongod
 
-    # maybe: install jest and gulp globally 
-    # maybe: install cypress globally
+    # make sure our .ssh directory has correct permissions 
+    chmod 700 ~/.ssh
+    chmod 600 ~/.ssh/id_*
+    chmod 644 ~/.ssh/id_*.pub
+    chmod 644 ~/.ssh/known_hosts
+    chmod 644 ~/.ssh/config
 
 else
     echo "Unsupported OS: $OSTYPE"
