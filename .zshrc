@@ -11,6 +11,9 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
+# mongodb alias for old version (v2.6.5)
+alias mongodb='sudo /usr/local/mongo/bin/mongod --dbpath /Users/bjornjarle/data/db'
+
 # direnv is used to set project-specific environment variables such as credentials
 eval "$(direnv hook zsh)"
 
