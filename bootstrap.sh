@@ -210,6 +210,7 @@ checkoutProjects() {
     )
     # copy the secrets we need
     cp "$MOUNT_POINT"/secrets/trailguide/.envrc "$PROJECTS_DIR/trailguide/.envrc"
+    # TODO: copy the google_credentials needed
   fi
 }
 
@@ -239,7 +240,7 @@ bootstrapLinux() {
   echo "Install and start the Mongo DB..."
   installAndStartMongoDB
 
-  # echo "Set up our secrets..."
+  echo "Set up our secrets..."
   configureSecrets
 
   echo "Checkout my projects..."
