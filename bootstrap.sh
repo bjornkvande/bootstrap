@@ -25,28 +25,10 @@
 
 set -e
 
-# Source the mount.sh file if it exists, so we can use mountSecretDrive from there
-if [ -f "$(dirname "$0")/mount.sh" ]; then
-  source "$(dirname "$0")/mount.sh"
-fi
-
-# PROJECTS=(
-#   ".bashrc"
-#   ".profile"
-#   ".zprofile"
-#   ".zshrc"
-#   ".gitconfig"
-#   ".tmux.conf"
-# )
+source "$(dirname "$0")/core.sh"
 
 # Cleanup on exit
-cleanup() {
-  if mount | grep -q "$MOUNT_POINT"; then
-    echo "Unmounting VeraCrypt container..."
-    unmountSecretDrive
-  fi
-}
-trap cleanup EXIT
+trap unmountDriveOnCleanup EXIT
 
 DOTFILES_DIR="$HOME/.dotfiles"
 
@@ -173,7 +155,62 @@ configureSecrets() {
 }
 
 checkoutProjects() {
-  echo "Configure git to use keys..."
+  echo "Cloning my projects..."
+
+  PROJECTS=(
+    "kvande"
+    "trailguide"
+    "sjogg"
+    "skiguide"
+    "trailguide.no"
+    "kvande.com"
+  ) 
+
+  # make sure the projects directory exists 
+  PROJECTS_DIR="$HOME/projects"
+  if [ ! -d "$PROJECTS_DIR" ]; then
+    echo "Creating $PROJECTS_DIR"
+    mkdir -p "$PROJECTS_DIR"
+  fi
+
+  # check out the projects if not already checked out
+  for project in "${PROJECTS[@]}"; do
+    PROJECT_PATH="$PROJECTS_DIR/$project"
+    if [ ! -d "$PROJECT_PATH" ]; then
+      echo "Cloning $project..."
+      git clone "git@github.com:bjornkvande/$project.git" "$PROJECT_PATH"
+    else
+      echo "$project is already checked out."
+    fi
+
+    # Check for submodules and init/update if present
+    if [ -f "$PROJECT_PATH/.gitmodules" ]; then
+      echo "Syncing and initializing submodules for $project..."
+      (
+        cd "$PROJECT_PATH"
+        git submodule sync --recursive
+        git submodule update --init --recursive
+      )
+    fi
+  done
+
+  # Switch to the development branch in trailguide if it exists
+  if [ -d "$PROJECTS_DIR/trailguide" ]; then
+    echo "Checking out the development branch of trailguide..."
+    (
+      cd "$PROJECTS_DIR/trailguide"
+      if git show-ref --verify --quiet refs/heads/development || git ls-remote --exit-code --heads origin development &>/dev/null; then
+        echo "Checking out 'development' branch in trailguide..."
+        git fetch origin development
+        git checkout development
+        git pull origin development
+      else
+        echo "'development' branch does not exist in trailguide."
+      fi
+    )
+    # copy the secrets we need
+    cp "$MOUNT_POINT"/secrets/trailguide/.envrc "$PROJECTS_DIR/trailguide/.envrc"
+  fi
 }
 
 bootstrapLinux() {
@@ -202,7 +239,7 @@ bootstrapLinux() {
   echo "Install and start the Mongo DB..."
   installAndStartMongoDB
 
-  echo "Set up our secrets..."
+  # echo "Set up our secrets..."
   configureSecrets
 
   echo "Checkout my projects..."
