@@ -2,8 +2,107 @@
 
 set -e
 
-if [ "$OSTYPE" == "darwin" ]; then
-    echo "Detected macOS"
+if [[ "$OSTYPE" == darwin* ]]; then
+  echo "Detected macOS"
+
+  # Install Homebrew if not already installed
+  if ! command -v brew &>/dev/null; then
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  else
+    echo "Homebrew already installed"
+  fi
+
+  # Add Homebrew to PATH for the current session
+  if [[ -d "/opt/homebrew/bin" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -d "/usr/local/bin" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+
+  echo "Updating Homebrew..."
+  brew update
+
+  # # Install developer essentials
+  brew install tmux git direnv wget gnupg
+
+  # nvm (node version manager)
+  echo "Installing Node Version Manager..."
+  if [ ! -d "$HOME/.nvm" ]; then
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  else
+    echo "Node Version Manager already installed"
+  fi
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+  # wr use node version 16 as default
+  nvm install 16
+  nvm alias default 16
+  nvm use default
+
+  # Install VS Code
+  if ! command -v code &>/dev/null; then
+    echo "Installing VS Code..."
+    brew install --cask visual-studio-code
+  else
+    echo "VS Code already installed"
+  fi
+
+  # # Install VS Code extensions
+  if [ -f "vscode-extensions.txt" ]; then
+    echo "Installing VS Code extensions..."
+    cat vscode-extensions.txt | xargs -n 1 code --install-extension
+  else
+    echo "No vscode-extensions.txt file found; skipping extensions."
+  fi
+
+  # create symlinks for the .dot files 
+  echo "Creating symbolic links for dotfiles..."
+  DOTFILES_DIR="$HOME/.dotfiles"
+  FILES_TO_LINK=(
+    ".gitconfig:$DOTFILES_DIR/.gitconfig"
+    ".zprofile:$DOTFILES_DIR/.zprofile"
+    ".zshrc:$DOTFILES_DIR/.zshrc"
+    ".tmux.conf:$DOTFILES_DIR/config/tmux.conf"
+  )
+
+  for entry in "${FILES_TO_LINK[@]}"; do
+      file="${entry%%:*}"     # left side before :
+      target="${entry##*:}"   # right side after :
+      link="$HOME/$file"
+      if [ -e "$link" ] || [ -L "$link" ]; then
+          echo "Backing up existing $link to $link.bak"
+          mv "$link" "$link.bak"
+      fi
+      echo "Creating symlink: $link -> $target"
+      ln -s "$target" "$link"
+  done
+
+  # # symlink the default Visual Studio Code settings file
+  echo "Creating symbolic link for the default Visual Studio Code settings file..."
+  VSCODE_USER_DIR="$HOME/Library/Application Support/Code/User"
+  mkdir -p "$VSCODE_USER_DIR"
+  if [ -L "$VSCODE_USER_DIR/settings.json" ]; then
+      mv "$VSCODE_USER_DIR/settings.json" "$VSCODE_USER_DIR/settings.json.bak"
+  fi
+  if [ -e "$VSCODE_USER_DIR/settings.json" ] || [ -L "$VSCODE_USER_DIR/settings.json" ]; then
+      rm -f "$VSCODE_USER_DIR/settings.json"
+  fi
+  ln -s "$DOTFILES_DIR/config/Code/User/settings.json" "$VSCODE_USER_DIR/settings.json"
+
+  # make sure our .ssh directory has correct permissions 
+  echo "Setting permissions for .ssh directory..."
+  chmod 700 ~/.ssh
+  chmod 600 ~/.ssh/id_*
+  chmod 644 ~/.ssh/id_*.pub
+  chmod 644 ~/.ssh/known_hosts
+  chmod 644 ~/.ssh/config
+
+  # # Install MongoDB 4.4
+  # echo "Installing MongoDB 4.4..."
+  # brew install mongodb-community@4.4
 
 elif [ "$OSTYPE" == "linux-gnu" ]; then
     echo "Detected Linux"

@@ -1,5 +1,4 @@
 {
-  "editor.formatOnSave": true,
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -12,6 +11,10 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
@@ -19,5 +22,36 @@
     "strings": true
   },
   "css.lint.unknownAtRules": "ignore",
-  "editor.rulers": [90]
+  "editor.rulers": [90],
+  "workbench.colorTheme": "Atom One Dark",
+  "editor.fontSize": 15,
+  "editor.lineHeight": 1.6,
+  "git.confirmSync": false,
+  "breadcrumbs.enabled": false,
+  "editor.renderWhitespace": "none",
+  "workbench.iconTheme": "vscode-icons",
+  "vsicons.dontShowNewVersionMessage": true,
+  "editor.minimap.maxColumn": 90,
+  "workbench.startupEditor": "none",
+  "zenMode.hideLineNumbers": false,
+  "editor.guides.indentation": false,
+  "search.defaultViewMode": "tree",
+  "liveServer.settings.donotShowInfoMsg": true,
+  "git.enableSmartCommit": true,
+  "editor.inlineSuggest.enabled": true,
+  "explorer.confirmDragAndDrop": false,
+  "vscode-edge-devtools.webhint": false,
+  "editor.quickSuggestionsDelay": 1000,
+  "editor.fontFamily": "Menlo, Monaco, 'Courier New', monospace",
+  "diffEditor.maxComputationTime": 0,
+  "github.copilot.editor.enableAutoCompletions": true,
+  "ipynb.pasteImagesAsAttachments.enabled": false,
+  "liveServer.settings.donotVerifyTags": true,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.wordWrapColumn": 90,
+  "deno.lint": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "github.copilot.nextEditSuggestions.enabled": true
 }
