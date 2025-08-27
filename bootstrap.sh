@@ -194,7 +194,7 @@ checkoutProjects() {
     fi
   done
 
-  # Switch to the development branch in trailguide if it exists
+  # use the development branch and prepare keys and secrets for the trailguide project
   if [ -d "$PROJECTS_DIR/trailguide" ]; then
     echo "Checking out the development branch of trailguide..."
     (
@@ -210,7 +210,8 @@ checkoutProjects() {
     )
     # copy the secrets we need
     cp "$MOUNT_POINT"/secrets/trailguide/.envrc "$PROJECTS_DIR/trailguide/.envrc"
-    # TODO: copy the google_credentials needed
+    cp "$MOUNT_POINT"/secrets/trailguide/google_credentials.json \
+       "$PROJECTS_DIR/trailguide/source/server/google_credentials.json"
   fi
 }
 
