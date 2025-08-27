@@ -35,7 +35,7 @@ DOTFILES_DIR="$HOME/.dotfiles"
 installDeveloperEssentialsTools() {
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
-    sudo apt install -y zsh tmux git curl build-essential direnv
+    sudo apt install -y zsh tmux git curl build-essential direnv fzf bat
     sudo apt install -y wget gpg apt-transport-https software-properties-common
   elif [[ "$OSTYPE" == darwin* ]]; then
     # homebrew is the equivalent of apt on mac
@@ -55,7 +55,7 @@ installDeveloperEssentialsTools() {
     brew update
 
     echo "Installing tmux git direnv wget gnupg..."
-    brew install tmux git direnv wget gnupg
+    brew install tmux git direnv wget gnupg fzf bat
   fi
 }
 
