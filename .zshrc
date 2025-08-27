@@ -29,3 +29,7 @@ if [[ "$(uname)" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
   export PATH="/opt/homebrew/bin:$PATH"
 fi
 
+# our old mongo 
+if [[ "$(uname)" == "Darwin" ]]; then
+  export PATH=/usr/local/mongo/bin:$PATH
+fi

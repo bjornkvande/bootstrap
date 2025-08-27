@@ -185,6 +185,7 @@ installNode() {
   # currently we use node 16 as our default version globally 
   nvm install 16
   nvm alias default 16
+  echo "Using node 16 as the default"
   nvm use default
 
   # make sure we can run trailguide on https 
