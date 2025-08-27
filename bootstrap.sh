@@ -250,7 +250,12 @@ checkoutProjects() {
         echo "'development' branch does not exist in trailguide."
       fi
     )
+
     # copy the secrets we need
+    MOUNT_POINT="/media/veracrypt1"
+    if [[ "$OSTYPE" == darwin* ]]; then
+      MOUNT_POINT="/Volumes/BJORN_DEV_MAC"
+    fi
     cp "$MOUNT_POINT"/secrets/trailguide/.envrc "$PROJECTS_DIR/trailguide/.envrc"
     cp "$MOUNT_POINT"/secrets/trailguide/google_credentials.json \
        "$PROJECTS_DIR/trailguide/source/server/google_credentials.json"
@@ -290,10 +295,8 @@ bootstrap() {
     echo "Install and configure Node..."
     installNode
 
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-      echo "Checkout my projects..."
-      checkoutProjects
-    fi
+    echo "Checkout my projects..."
+    checkoutProjects
 
     echo "Install and start the Mongo DB..."
     installAndStartMongoDB
