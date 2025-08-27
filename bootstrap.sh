@@ -254,7 +254,7 @@ checkoutProjects() {
     if [[ "$OSTYPE" == darwin* ]]; then
       MOUNT_POINT="/Volumes/BJORN_DEV_MAC"
     fi
-    cp "$MOUNT_POINT"/secrets/trailguide/.envrc "$PROJECTS_DIR/trailguide/.envrc"
+    cp "$MOUNT_POINT"/secrets/trailguide/.envrc "$PROJECTS_DIR/trailguide/.envrc_secrets"
     cp "$MOUNT_POINT"/secrets/trailguide/google_credentials.json \
        "$PROJECTS_DIR/trailguide/source/server/google_credentials.json"
   fi
