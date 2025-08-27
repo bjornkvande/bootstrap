@@ -12,16 +12,13 @@
 #  1) Have the USB stick plugged in and mounted
 #  2) (linux) Install zsh and developer tool essentials (git, tmux, wget, direnv etc)
 #  2) (mac) Install homebrew and developer tool essentials (git, tmux, direnv, wget, etc)
-#  3) Install the node version manager so we can use different versions of node
-#  4) Install VS Code and the extensions I use 
-#  5) Set up dot files for bash, zsh, git, and tmux 
-#  6) Configure VS Code the way I want
-#  7) (linux) Make zsh the default shell
+#  3) Set up dot files for bash, zsh, git, and tmux 
+#  4) Install and configure VS Code
+#  5) Populate the .ssh directory with my keys
+#  6) Install the node version manager and node 16
+#  7) Check out my projects and populate with the keys I need
 #  8) Install and start mongodb
-
-# TODO:
-# 20) (linux) Install veracrypt and mount the secret part of the USB stick
-# 21) create, populate, and configure user rights for the .ssh directory
+#  9) Make zsh the default shell
 
 set -e
 
