@@ -1,6 +1,9 @@
 # configure the prompt
-# PROMPT='%m:%~ %% '
-eval "$(starship init zsh)"
+if [[ "$(uname)" == "Darwin" ]]; then
+  eval "$(starship init zsh)"
+else
+  PROMPT='%m:%~ %% '
+fi
 
 # Set history options
 HISTFILE=~/.zsh_history

@@ -14,18 +14,9 @@ unmountSecretDrive() {
 
 mountSecretDrive() {
   # the folder where this script is located (your USB stick)
-  USB_BASE_DIR="$(cd "$(dirname "$PWD")" && pwd)"
+  USB_BASE_DIR="/media/bjorn/BJORN_DEV"
   DEB_FILE="veracrypt-1.26.24-Ubuntu-20.04-amd64.deb"
   SECRET_FILE="$USB_BASE_DIR/secret"
-
-  # Cleanup on exit
-  # cleanup() {
-  #   if mount | grep -q "$MOUNT_POINT"; then
-  #     echo "Unmounting VeraCrypt container..."
-  #     unmountSecretDrive
-  #   fi
-  # }
-  # trap cleanup EXIT
 
   # install veracrypt
   INSTALL_FILE="$USB_BASE_DIR/$DEB_FILE"
@@ -46,8 +37,12 @@ mountSecretDrive() {
   if mount | grep -q "$MOUNT_POINT"; then
     echo "Secret container already mounted at $MOUNT_POINT."
   else
-    echo "Mounting secret container..."
-    veracrypt --text --pim=0 --keyfiles="" --protect-hidden=no --mount "$SECRET_FILE" "$MOUNT_POINT"
+    if [ -f "$SECRET_FILE" ]; then
+      echo "Mounting secret container..."
+      veracrypt --text --pim=0 --keyfiles="" --protect-hidden=no --mount "$SECRET_FILE" "$MOUNT_POINT"
+    else
+      echo "$SECRET_FILE not found, skipping mount."
+    fi
   fi
 }
 
