@@ -43,14 +43,6 @@ installDeveloperEssentialsTools() {
     sudo apt update
     sudo apt install -y zsh tmux git curl build-essential direnv fzf bat
     sudo apt install -y wget gpg apt-transport-https software-properties-common
-    # build ghostty from source
-    # sudo apt install -y libgtk-4-dev libadwaita-1-dev zig
-    # git clone https://github.com/ghostty-org/ghostty.git
-    # cd ghostty
-    # zig build -Doptimize=ReleaseFast
-    # sudo rm -f /etc/apt/preferences.d/nosnap.pref
-    # sudo apt install -y snapd
-    # sudo snap install ghostty --classic
     # starship is needed for the prompt
     # curl -sS https://starship.rs/install.sh | sh
   elif [[ "$OSTYPE" == darwin* ]]; then
