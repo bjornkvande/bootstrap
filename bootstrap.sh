@@ -39,11 +39,12 @@ fi
 
 installDeveloperEssentialsTools() {
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ jammy main universe"
     sudo apt update
     sudo apt install -y zsh tmux git curl build-essential direnv fzf bat
     sudo apt install -y wget gpg apt-transport-https software-properties-common
-    # starship is needed for the prompt
+    # fonts and starship
+    # sudo apt install fonts-firacode
+    # fc-cache -fv
     # curl -sS https://starship.rs/install.sh | sh
   elif [[ "$OSTYPE" == darwin* ]]; then
     # homebrew is the equivalent of apt on mac
