@@ -57,6 +57,9 @@ installDeveloperEssentialsTools() {
 
     echo "Installing tmux git direnv wget gnupg..."
     brew install tmux git direnv wget gnupg fzf bat
+
+    echo "Installing ghostty..."
+    brew install --cask ghostty
   fi
 }
 
