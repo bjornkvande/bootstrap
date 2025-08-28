@@ -10,11 +10,6 @@ setopt append_history hist_ignore_dups
 autoload -Uz compinit
 compinit
 
-# some ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
 # mongodb alias for old version (v2.6.5)
 alias mongodb='sudo /usr/local/mongo/bin/mongod --dbpath /Users/bjornjarle/data/db'
 
@@ -36,4 +31,8 @@ fi
 # our old mongo 
 if [[ "$(uname)" == "Darwin" ]]; then
   export PATH=/usr/local/mongo/bin:$PATH
+fi
+
+if [ -f "$HOME/.dotfiles/.aliases" ]; then
+  source "$HOME/.dotfiles/.aliases"
 fi
