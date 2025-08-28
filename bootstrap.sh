@@ -37,6 +37,7 @@ installDeveloperEssentialsTools() {
     sudo apt update
     sudo apt install -y zsh tmux git curl build-essential direnv fzf bat
     sudo apt install -y wget gpg apt-transport-https software-properties-common
+    sudo snap install ghostty --classic
   elif [[ "$OSTYPE" == darwin* ]]; then
     # homebrew is the equivalent of apt on mac
     echo "Installing homebrew..."
