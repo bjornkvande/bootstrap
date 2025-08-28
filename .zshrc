@@ -1,4 +1,6 @@
-PROMPT='%m:%~ %% '
+# configure the prompt
+# PROMPT='%m:%~ %% '
+eval "$(starship init zsh)"
 
 # Set history options
 HISTFILE=~/.zsh_history

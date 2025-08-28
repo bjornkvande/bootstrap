@@ -31,6 +31,11 @@ fi
 
 
 DOTFILES_DIR="$HOME/.dotfiles"
+LINUX_CONFIG_DIR="$HOME/.config"
+CONFIG_DIR="$LINUX_CONFIG_DIR"
+if [[ "$OSTYPE" == darwin* ]]; then
+  CONFIG_DIR="$HOME/Library/Application Support"
+fi
 
 installDeveloperEssentialsTools() {
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -56,7 +61,7 @@ installDeveloperEssentialsTools() {
     brew update
 
     echo "Installing tmux git direnv wget gnupg..."
-    brew install tmux git direnv wget gnupg fzf bat
+    brew install tmux git direnv wget gnupg fzf bat starship
 
     echo "Installing ghostty..."
     brew install --cask ghostty
@@ -138,11 +143,7 @@ configureApps() {
   # set default configuration
   cp "vscode_settings.json" "$DOTFILES_DIR"
   cp "ghostty.conf" "$DOTFILES_DIR"
-
-  CONFIG_DIR="$HOME/.config"
-  if [[ "$OSTYPE" == darwin* ]]; then
-    CONFIG_DIR="$HOME/Library/Application Support"
-  fi
+  cp "starship.toml" "$DOTFILES_DIR"
 
   # visual studio code
   echo "Configuring Visual Studio Code..."
@@ -161,6 +162,14 @@ configureApps() {
     rm -f "$GHOSTTY_DIR/config"
   fi
   ln -s "$DOTFILES_DIR/ghostty.conf" "$GHOSTTY_DIR/config"
+
+  # my prompt configuration by starship
+  STARSHIP_CONFIG="$LINUX_CONFIG_DIR/starship.toml"
+  mkdir -p "$LINUX_CONFIG_DIR"
+  if [ -e "$STARSHIP_CONFIG" ] || [ -L "$STARSHIP_CONFIG" ]; then
+    rm -f "$STARSHIP_CONFIG"
+  fi
+  ln -s "$DOTFILES_DIR/starship.toml" "$STARSHIP_CONFIG"
 }
 
 configureSecrets() {
