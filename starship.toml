@@ -1,17 +1,16 @@
 format = """
-[](#9A348E)\
 $hostname\
-[](bg:#DA627D fg:#9A348E)\
+[](bg:#DA627D fg:#333333)\
 $directory\
 [](fg:#DA627D bg:#FCA17D)\
 $git_branch\
 $git_status\
-[ ](fg:#FCA17D)\
+[\n→ ](fg:#FCA17D)\
 """
 
 [hostname]
 ssh_only = false
-format = '[$hostname ](bg:#9A348E)'
+format = '[ $hostname ](bg:#333333)'
 
 [directory]
 format = "[ $path ](fg:black bg:#DA627D)"
@@ -20,7 +19,7 @@ truncation_symbol = "…/"
 
 [git_branch]
 symbol = ""
-format = '[ $symbol $branch ](fg:black bg:#FCA17D)'
+format = '[ $symbol $branch](fg:black bg:#FCA17D)'
 
 [git_status]
-format = '[$all_status$ahead_behind ](fg:black bg:#FCA17D)'
+format = '[ $all_status$ahead_behind](fg:black bg:#FCA17D)'
