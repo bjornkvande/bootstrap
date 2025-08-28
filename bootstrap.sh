@@ -130,19 +130,35 @@ installVSCode() {
   else
     echo "No vscode-extensions.txt file found; skipping extensions."
   fi
+}
 
+configureApps() {
   # set default configuration
-  echo "Setting default configuration for VS Code..."
   cp "vscode_settings.json" "$DOTFILES_DIR"
-  VSCODE_USER_DIR="$HOME/.config/Code/User"
+  cp "ghostty.conf" "$DOTFILES_DIR"
+
+  CONFIG_DIR="$HOME/.config"
   if [[ "$OSTYPE" == darwin* ]]; then
-    VSCODE_USER_DIR="$HOME/Library/Application Support/Code/User"
+    CONFIG_DIR="$HOME/Library/Application Support"
   fi
+
+  # visual studio code
+  echo "Configuring Visual Studio Code..."
+  VSCODE_USER_DIR="$CONFIG_DIR/Code/User"
   mkdir -p "$VSCODE_USER_DIR"
   if [ -e "$VSCODE_USER_DIR/settings.json" ] || [ -L "$VSCODE_USER_DIR/settings.json" ]; then
     rm -f "$VSCODE_USER_DIR/settings.json"
   fi
   ln -s "$DOTFILES_DIR/vscode_settings.json" "$VSCODE_USER_DIR/settings.json"
+
+  # ghostty
+  echo "Configuring Ghostty..."
+  GHOSTTY_DIR="$CONFIG_DIR/com.mitchellh.ghostty"
+  mkdir -p "$GHOSTTY_DIR"
+  if [ -e "$GHOSTTY_DIR/config" ] || [ -L "$GHOSTTY_DIR/config" ]; then
+    rm -f "$GHOSTTY_DIR/config"
+  fi
+  ln -s "$DOTFILES_DIR/ghostty.conf" "$GHOSTTY_DIR/config"
 }
 
 configureSecrets() {
@@ -165,13 +181,17 @@ configureSecrets() {
     MOUNT_POINT="/Volumes/BJORN_DEV_MAC"
   fi
 
-  cp "$MOUNT_POINT"/secrets/ssh/* ~/.ssh/
-  echo "Copied SSH secrets to ~/.ssh/"
-  chmod 700 ~/.ssh
-  chmod 600 ~/.ssh/id_*
-  chmod 644 ~/.ssh/id_*.pub
-  chmod 644 ~/.ssh/known_hosts
-  chmod 644 ~/.ssh/config
+  if mount | grep -q "$MOUNT_POINT"; then
+    cp "$MOUNT_POINT"/secrets/ssh/* ~/.ssh/
+    echo "Copied SSH secrets to ~/.ssh/"
+    chmod 700 ~/.ssh
+    chmod 600 ~/.ssh/id_*
+    chmod 644 ~/.ssh/id_*.pub
+    chmod 644 ~/.ssh/known_hosts
+    chmod 644 ~/.ssh/config
+  else
+    echo "Mount point $MOUNT_POINT is not mounted. Skipping SSH secrets copy."
+  fi
 }
 
 installNode() {
@@ -290,6 +310,9 @@ bootstrap() {
 
     echo "Install and configure VS Code..."
     installVSCode
+
+    echo "Setting up default app configs..."
+    configureApps
 
     echo "Set up our secrets..."
     configureSecrets
