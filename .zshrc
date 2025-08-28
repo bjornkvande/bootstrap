@@ -4,7 +4,11 @@ PROMPT='%m:%~ %% '
 HISTFILE=~/.zsh_history
 HISTSIZE=5000
 SAVEHIST=5000
-setopt append_history
+setopt append_history hist_ignore_dups
+
+# Completion
+autoload -Uz compinit
+compinit
 
 # some ls aliases
 alias ll='ls -alF'
