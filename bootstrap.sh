@@ -61,6 +61,8 @@ installDeveloperEssentialsTools() {
     echo "Installing ghostty..."
     brew install --cask ghostty
   fi
+
+  # sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 }
 
 configureDotFiles() {
@@ -278,9 +280,11 @@ checkoutProjects() {
     if [[ "$OSTYPE" == darwin* ]]; then
       MOUNT_POINT="/Volumes/BJORN_DEV_MAC"
     fi
-    cp "$MOUNT_POINT"/secrets/trailguide/.envrc "$PROJECTS_DIR/trailguide/.envrc_secrets"
-    cp "$MOUNT_POINT"/secrets/trailguide/google_credentials.json \
-       "$PROJECTS_DIR/trailguide/source/server/google_credentials.json"
+    if mount | grep -q "$MOUNT_POINT"; then
+      cp "$MOUNT_POINT"/secrets/trailguide/.envrc "$PROJECTS_DIR/trailguide/.envrc_secrets"
+      cp "$MOUNT_POINT"/secrets/trailguide/google_credentials.json \
+        "$PROJECTS_DIR/trailguide/source/server/google_credentials.json"
+    fi
   fi
 }
 
