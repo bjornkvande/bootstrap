@@ -1,4 +1,5 @@
 format = """
+$os\
 $hostname\
 [](bg:#DA627D fg:#444444)\
 $directory\
@@ -7,6 +8,31 @@ $git_branch\
 $git_status\
 [\n→ ](fg:#FCA17D)\
 """
+
+[os]
+disabled = false
+style = "fg:#bbbbbb bg:#444444"
+
+[os.symbols]
+Windows = ""
+Ubuntu = "󰕈"
+SUSE = ""
+Raspbian = "󰐿"
+Mint = "󰣭"
+Macos = "󰀵"
+Manjaro = ""
+Linux = "󰌽"
+Gentoo = "󰣨"
+Fedora = "󰣛"
+Alpine = ""
+Amazon = ""
+Android = ""
+Arch = "󰣇"
+Artix = "󰣇"
+CentOS = ""
+Debian = "󰣚"
+Redhat = "󱄛"
+RedHatEnterprise = "󱄛"
 
 [hostname]
 ssh_only = false
