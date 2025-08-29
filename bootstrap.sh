@@ -22,8 +22,8 @@
 
 set -e
 
-# packages to be installed in the script below
-PACKAGES=(
+# the list of packages that can be installed
+ALL_PACKAGES=(
   "dev"
   "terminal"
   "dotfiles"
@@ -34,6 +34,25 @@ PACKAGES=(
   "projects"
   "mongo"
 )
+PACKAGES=("${ALL_PACKAGES[@]}")
+
+# by default all packages are installed, but we can specify which ones to install
+# from the command line, an example would be ./bootstrap.sh dev terminal config
+if [ "$#" -ge 1 ]; then
+  PACKAGES=()
+  for arg in "$@"; do
+    for pkg in "${ALL_PACKAGES[@]}"; do
+      if [[ "$arg" == "$pkg" ]]; then
+        PACKAGES+=("$pkg")
+        break
+      fi
+    done
+  done
+  if [ "${#PACKAGES[@]}" -eq 0 ]; then
+    echo "No valid packages specified. Valid options are: ${ALL_PACKAGES[*]}"
+    exit 1
+  fi
+fi
 
 
 source "$(dirname "$0")/core.sh"
