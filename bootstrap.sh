@@ -22,6 +22,20 @@
 
 set -e
 
+# packages to be installed in the script below
+PACKAGES=(
+  "dev"
+  "terminal"
+  "dotfiles"
+  "vscode"
+  "config"
+  "secrets"
+  "node"
+  "projects"
+  "mongo"
+)
+
+
 source "$(dirname "$0")/core.sh"
 
 # Cleanup on exit
@@ -37,40 +51,43 @@ if [[ "$OSTYPE" == darwin* ]]; then
   CONFIG_DIR="$HOME/Library/Application Support"
 fi
 
-installDeveloperEssentialsTools() {
+installHomebrew() {
+  echo "Installing homebrew..."
+  if ! command -v brew &>/dev/null; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  else
+    echo "Homebrew already installed"
+  fi
+  if [[ -d "/opt/homebrew/bin" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -d "/usr/local/bin" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+}
+
+installDeveloperTools() {
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
-    sudo apt install -y zsh tmux git curl build-essential direnv fzf bat
-    sudo apt install -y wget gpg apt-transport-https software-properties-common
-    # fonts and starship
-    # sudo apt install fonts-firacode
-    # fc-cache -fv
-    # curl -sS https://starship.rs/install.sh | sh
+    sudo apt install -y git curl build-essential wget gpg
+    sudo apt install -y apt-transport-https software-properties-common
   elif [[ "$OSTYPE" == darwin* ]]; then
-    # homebrew is the equivalent of apt on mac
-    echo "Installing homebrew..."
-    if ! command -v brew &>/dev/null; then
-      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    else
-      echo "Homebrew already installed"
-    fi
-    if [[ -d "/opt/homebrew/bin" ]]; then
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    elif [[ -d "/usr/local/bin" ]]; then
-      eval "$(/usr/local/bin/brew shellenv)"
-    fi
-
-    echo "Updating homebrew..."
+    installHomebrew
     brew update
+    brew install git wget gnupg
+  fi
+}
 
-    echo "Installing tmux git direnv wget gnupg..."
-    brew install tmux git direnv wget gnupg fzf bat starship
-
+installTerminal() {
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    sudo apt update
+    sudo apt install -y zsh tmux direnv fzf bat
+  elif [[ "$OSTYPE" == darwin* ]]; then
+    installHomebrew
+    brew update
+    brew install tmux direnv fzf bat starship
     echo "Installing ghostty..."
     brew install --cask ghostty
   fi
-
-  # sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 }
 
 configureDotFiles() {
@@ -167,6 +184,7 @@ configureApps() {
   ln -s "$DOTFILES_DIR/ghostty.conf" "$GHOSTTY_DIR/config"
 
   # my prompt configuration by starship
+  echo "Configuring Starship prompt..."
   STARSHIP_CONFIG="$LINUX_CONFIG_DIR/starship.toml"
   mkdir -p "$LINUX_CONFIG_DIR"
   if [ -e "$STARSHIP_CONFIG" ] || [ -L "$STARSHIP_CONFIG" ]; then
@@ -317,41 +335,57 @@ installAndStartMongoDB() {
 }
 
 bootstrap() {
-  if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "darwin"* ]]; then
-    echo "Installing developer essentials..."
-    installDeveloperEssentialsTools
-
-    echo "Setting up home directory dot files..."
-    configureDotFiles
-
-    echo "Install and configure VS Code..."
-    installVSCode
-
-    echo "Setting up default app configs..."
-    configureApps
-
-    echo "Set up our secrets..."
-    configureSecrets
-
-    echo "Install and configure Node..."
-    installNode
-
-    echo "Checkout my projects..."
-    checkoutProjects
-
-    echo "Install and start the Mongo DB..."
-    installAndStartMongoDB
-
-    # make zsh the default shell 
-    if [ "$SHELL" != "$(which zsh)" ]; then
-      echo "Changing default shell to zsh..."
-      chsh -s "$(which zsh)"
-    else
-      echo "Default shell is already zsh."
-    fi
-  else
+  if [[ !("$OSTYPE" == "linux-gnu" || "$OSTYPE" == "darwin"*) ]]; then
     echo "Unsupported OS: $OSTYPE"
     exit 1
+  fi
+
+  if [[ " ${PACKAGES[@]} " =~ " dev " ]]; then
+    echo -e "\nInstalling developer essentials..."
+    installDeveloperTools
+  fi
+
+  if [[ " ${PACKAGES[@]} " =~ " terminal " ]]; then
+    echo -e "\nInstalling terminals and shell utilities..."
+    installTerminal
+  fi
+
+  if [[ " ${PACKAGES[@]} " =~ " dotfiles " ]]; then
+    echo -e "\nSetting up home directory dot files..."
+    configureDotFiles
+  fi
+
+  if [[ " ${PACKAGES[@]} " =~ " vscode " ]]; then
+    echo -e "\nInstalling VS Code with extensions..."
+    installVSCode
+  fi
+
+  if [[ " ${PACKAGES[@]} " =~ " config " ]]; then
+    echo -e "\nSetting up default app configs..."
+    configureApps
+  fi
+
+  if [[ " ${PACKAGES[@]} " =~ " secrets " ]]; then
+    echo -e "\nSetting up secrets..."
+    configureSecrets
+  fi
+
+  if [[ " ${PACKAGES[@]} " =~ " node " ]]; then
+    echo -e "\nInstalling and configuring Node.js..."
+    installNode
+  fi
+
+  if [[ " ${PACKAGES[@]} " =~ " projects " ]]; then
+    echo -e "\nChecking out my projects..."
+    checkoutProjects
+  fi
+
+  # echo "Install and start the Mongo DB..."
+  # installAndStartMongoDB
+
+  # make zsh the default shell 
+  if [ "$SHELL" != "$(which zsh)" ]; then
+    chsh -s "$(which zsh)"
   fi
 }
 
