@@ -96,7 +96,7 @@ installDeveloperTools() {
   fi
 }
 
-installTerminal() {
+installShell() {
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
     sudo apt install -y zsh tmux direnv fzf bat
@@ -104,13 +104,18 @@ installTerminal() {
     installHomebrew
     brew update
     brew install tmux direnv fzf bat starship
+  fi
+}
+
+installTerminal() {
+  installShell
+  if [[ "$OSTYPE" == darwin* ]]; then
     echo "Installing ghostty..."
     brew install --cask ghostty
   fi
 }
 
 configureDotFiles() {
-  # the files to copy into the directory and link from the home directory
   FILES=(
     ".bashrc"
     ".profile"
