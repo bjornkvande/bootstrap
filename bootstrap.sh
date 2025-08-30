@@ -404,8 +404,10 @@ bootstrap() {
     checkoutProjects
   fi
 
-  # echo "Install and start the Mongo DB..."
-  # installAndStartMongoDB
+  if [[ " ${PACKAGES[@]} " =~ " mongo " ]]; then
+    echo "Install and start the Mongo DB..."
+    installAndStartMongoDB
+  fi
 
   # make zsh the default shell 
   if [ "$SHELL" != "$(which zsh)" ]; then
