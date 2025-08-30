@@ -54,7 +54,7 @@ if [ "$#" -ge 1 ]; then
   fi
 fi
 
-
+# import some core functions shared with other scripts
 source "$(dirname "$0")/core.sh"
 
 # Cleanup on exit
