@@ -121,6 +121,7 @@ configureDotFiles() {
     ".profile"
     ".zprofile"
     ".zshrc"
+    ".aliases"
     ".gitconfig"
     ".tmux.conf"
   )
