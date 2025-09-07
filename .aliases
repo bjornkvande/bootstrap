@@ -5,3 +5,4 @@ alias l='ls -CF'
 
 alias ghosty='ghostty'
 alias cat='bat'
+alias keys="open ~/.dotfiles/vscode-keyboard-shortcuts-macos.pdf"

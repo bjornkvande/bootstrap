@@ -170,6 +170,10 @@ installVSCode() {
     fi
   fi
 
+  # copy the pdf with the key files into my .dotfiles directory 
+  mkdir -p "$DOTFILES_DIR"
+  cp "vscode-keyboard-shortcuts-macos.pdf" "$DOTFILES_DIR/"
+
   # install extensions
   if [ -f "vscode-extensions.txt" ]; then
     echo "Installing VS Code extensions..."
