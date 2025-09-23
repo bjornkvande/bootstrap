@@ -87,12 +87,12 @@ installHomebrew() {
 installDeveloperTools() {
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
-    sudo apt install -y git curl build-essential wget gpg
+    sudo apt install -y git curl build-essential wget gpg nginx
     sudo apt install -y apt-transport-https software-properties-common
   elif [[ "$OSTYPE" == darwin* ]]; then
     installHomebrew
     brew update
-    brew install git wget gnupg
+    brew install git wget gnupg nginx
   fi
 }
 
