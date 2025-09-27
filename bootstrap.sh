@@ -314,7 +314,7 @@ checkoutProjects() {
     fi
   done
 
-  # use the development branch and prepare keys and secrets for the trailguide project
+  # use the development branch for the trailguide project
   if [ -d "$PROJECTS_DIR/trailguide" ]; then
     echo "Checking out the development branch of trailguide..."
     (
@@ -328,16 +328,28 @@ checkoutProjects() {
         echo "'development' branch does not exist in trailguide."
       fi
     )
+  fi
 
-    # copy the secrets we need
-    MOUNT_POINT="/media/veracrypt1"
-    if [[ "$OSTYPE" == darwin* ]]; then
-      MOUNT_POINT="/Volumes/BJORN_DEV_MAC"
-    fi
+  MOUNT_POINT="/media/veracrypt1"
+  if [[ "$OSTYPE" == darwin* ]]; then
+    MOUNT_POINT="/Volumes/BJORN_DEV_MAC"
+  fi
+
+  # prepare keys for the trailguide project
+  if [ -d "$PROJECTS_DIR/trailguide" ]; then
     if mount | grep -q "$MOUNT_POINT"; then
+      echo "Copying secret keys for trailguide..."
       cp "$MOUNT_POINT"/secrets/trailguide/.envrc "$PROJECTS_DIR/trailguide/.envrc_secrets"
       cp "$MOUNT_POINT"/secrets/trailguide/google_credentials.json \
         "$PROJECTS_DIR/trailguide/source/server/google_credentials.json"
+    fi
+  fi
+
+  # prepare keys for the sjogg project
+  if [ -d "$PROJECTS_DIR/sjogg" ]; then
+    if mount | grep -q "$MOUNT_POINT"; then
+      echo "Copying secret keys for sjogg..."
+      cp "$MOUNT_POINT"/secrets/sjogg/.envrc_secrets "$PROJECTS_DIR/sjogg/.envrc_secrets"
     fi
   fi
 }
