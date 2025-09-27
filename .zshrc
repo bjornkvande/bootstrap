@@ -5,6 +5,11 @@ else
   PROMPT='%m:%~ %% '
 fi
 
+# Force block cursor before every prompt
+precmd() {
+  echo -ne "\e[2 q"
+}
+
 # Set history options
 HISTFILE=~/.zsh_history
 HISTSIZE=5000

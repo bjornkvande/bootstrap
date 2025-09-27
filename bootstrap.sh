@@ -54,7 +54,7 @@ if [ "$#" -ge 1 ]; then
   fi
 fi
 
-
+# import some core functions shared with other scripts
 source "$(dirname "$0")/core.sh"
 
 # Cleanup on exit
@@ -87,13 +87,14 @@ installHomebrew() {
 installDeveloperTools() {
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
-    sudo apt install -y git curl build-essential wget gpg
+    sudo apt install -y git curl build-essential wget gpg nginx docker
     sudo apt install -y apt-transport-https software-properties-common
   elif [[ "$OSTYPE" == darwin* ]]; then
     installHomebrew
     brew update
-    brew install git wget gnupg
+    brew install git wget gnupg nginx docker
   fi
+  curl -fsSL https://deno.land/install.sh | sh
 }
 
 installShell() {
@@ -121,6 +122,7 @@ configureDotFiles() {
     ".profile"
     ".zprofile"
     ".zshrc"
+    ".aliases"
     ".gitconfig"
     ".tmux.conf"
   )
@@ -168,6 +170,10 @@ installVSCode() {
       echo "VS Code already installed"
     fi
   fi
+
+  # copy the pdf with the key files into my .dotfiles directory 
+  mkdir -p "$DOTFILES_DIR"
+  cp "vscode-keyboard-shortcuts-macos.pdf" "$DOTFILES_DIR/"
 
   # install extensions
   if [ -f "vscode-extensions.txt" ]; then
@@ -416,8 +422,10 @@ bootstrap() {
     checkoutProjects
   fi
 
-  # echo "Install and start the Mongo DB..."
-  # installAndStartMongoDB
+  if [[ " ${PACKAGES[@]} " =~ " mongo " ]]; then
+    echo "Install and start the Mongo DB..."
+    installAndStartMongoDB
+  fi
 
   # make zsh the default shell 
   if [ "$SHELL" != "$(which zsh)" ]; then

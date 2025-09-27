@@ -4,3 +4,6 @@ alias la='ls -A'
 alias l='ls -CF'
 
 alias ghosty='ghostty'
+alias cat='bat'
+alias keys="open ~/.dotfiles/vscode-keyboard-shortcuts-macos.pdf"
+alias mem='ps -caxo rss,comm | grep node | awk '\''{sum += $1} END {print sum/1024 " MB"}'\'''
