@@ -94,6 +94,7 @@ installDeveloperTools() {
     brew update
     brew install git wget gnupg nginx docker
   fi
+  curl -fsSL https://deno.land/install.sh | sh
 }
 
 installShell() {
