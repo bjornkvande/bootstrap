@@ -2,7 +2,7 @@
 set -e
 
 # make sure we can run editors using ghostty
-cp .bashrc ~/.bashrc
+cp .bashrc_ubuntu ~/.bashrc
 
 # Basic update and essentials
 echo "Updating system packages..."
