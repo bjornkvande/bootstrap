@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+# make sure we can run editors using ghostty
+export TERM=xterm
+
+
 # Basic update and essentials
 echo "Updating system packages..."
 sudo apt update && sudo apt upgrade -y
