@@ -8,7 +8,7 @@ sudo apt update && sudo apt upgrade -y
 # Install nginx
 echo "Installing nginx..."
 sudo apt install -y nginx
-sudo cp nginx.conf /etc/nginx/nginx.conf
+# sudo cp nginx.conf /etc/nginx/nginx.conf
 
 # Test and reload nginx
 sudo nginx -t
