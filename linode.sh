@@ -10,7 +10,7 @@ sudo apt update && sudo apt upgrade -y
 
 # Install nginx
 echo "Installing nginx..."
-sudo apt install -y nginx
+sudo apt install -y nginx certbot python3-certbot-nginx
 
 # Make sure we have the correct access to the web root folder
 sudo chown -R $USER:$USER /var/www/html
