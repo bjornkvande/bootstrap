@@ -2,8 +2,7 @@
 set -e
 
 # make sure we can run editors using ghostty
-export TERM=xterm
-
+cp .bash_profile ~/.bash_profile
 
 # Basic update and essentials
 echo "Updating system packages..."
