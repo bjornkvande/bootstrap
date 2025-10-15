@@ -2,7 +2,7 @@
 set -e
 
 # make sure we can run editors using ghostty
-cp .bash_profile ~/.bash_profile
+cp .bashrc ~/.bashrc
 
 # Basic update and essentials
 echo "Updating system packages..."
