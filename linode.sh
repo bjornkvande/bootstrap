@@ -12,6 +12,9 @@ sudo apt update && sudo apt upgrade -y
 echo "Installing nginx..."
 sudo apt install -y nginx
 
+# Make sure we have the correct access to the web root folder
+sudo chown -R $USER:$USER /var/www/html
+
 # Test and reload nginx
 sudo nginx -t
 sudo systemctl restart nginx
