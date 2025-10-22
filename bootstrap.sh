@@ -358,6 +358,14 @@ checkoutProjects() {
       cp "$MOUNT_POINT"/secrets/sjogg/.envrc_secrets "$PROJECTS_DIR/sjogg/.envrc_secrets"
     fi
   fi
+
+  # prepare keys for the skiguide project
+  if [ -d "$PROJECTS_DIR/skiguide" ]; then
+    if mount | grep -q "$MOUNT_POINT"; then
+      echo "Copying secret keys for skiguide..."
+      cp "$MOUNT_POINT"/secrets/skiguide/.envrc_secrets "$PROJECTS_DIR/skiguide/.envrc_secrets"
+    fi
+  fi
 }
 
 installAndStartMongoDB() {
