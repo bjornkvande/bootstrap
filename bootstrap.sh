@@ -26,6 +26,7 @@ set -e
 ALL_PACKAGES=(
   "dev"
   "terminal"
+  "fonts"
   "dotfiles"
   "vscode"
   "config"
@@ -85,26 +86,32 @@ installHomebrew() {
 }
 
 installDeveloperTools() {
+  echo "Installing developer tools..."
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
-    sudo apt install -y git curl build-essential wget gpg nginx docker
+    sudo apt install -y git curl build-essential wget gpg nginx
     sudo apt install -y apt-transport-https software-properties-common
   elif [[ "$OSTYPE" == darwin* ]]; then
     installHomebrew
     brew update
-    brew install git wget gnupg nginx docker
+    echo "Install git, wget, gnupg, nginx"
+    brew install git wget gnupg nginx
   fi
   curl -fsSL https://deno.land/install.sh | sh
 }
 
 installShell() {
+  echo "Installing zsh and utilities..."
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
     sudo apt install -y zsh tmux direnv fzf bat
   elif [[ "$OSTYPE" == darwin* ]]; then
     installHomebrew
     brew update
-    brew install tmux direnv fzf bat starship
+    echo "Install rust..."
+    curl https://sh.rustup.rs -sSf | sh
+    echo "Install tmux, direnv, fzf, starship"
+    brew install tmux direnv fzf starship
   fi
 }
 
@@ -113,6 +120,12 @@ installTerminal() {
   if [[ "$OSTYPE" == darwin* ]]; then
     echo "Installing ghostty..."
     brew install --cask ghostty
+  fi
+}
+
+installFonts() {
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install --cask font-jetbrains-mono-nerd-font
   fi
 }
 
@@ -393,6 +406,11 @@ bootstrap() {
   if [[ " ${PACKAGES[@]} " =~ " dev " ]]; then
     echo -e "\nInstalling developer essentials..."
     installDeveloperTools
+  fi
+
+  if [[ " ${PACKAGES[@]} " =~ " fonts " ]]; then
+    echo -e "\nInstalling fonts..."
+    installFonts
   fi
 
   if [[ " ${PACKAGES[@]} " =~ " terminal " ]]; then
