@@ -23,7 +23,7 @@
   },
   "css.lint.unknownAtRules": "ignore",
   "editor.rulers": [90],
-  "workbench.colorTheme": "Atom One Dark",
+  "workbench.colorTheme": "Tokyo Night",
   "editor.fontSize": 15,
   "editor.lineHeight": 1.6,
   "git.confirmSync": false,

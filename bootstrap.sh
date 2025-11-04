@@ -22,6 +22,15 @@
 
 set -e
 
+# figure out if we are runnin on omarchy
+# in that case, we install a lot less packages
+OMARCHY_CONFIG_DIR="$HOME/.config/omarchy"
+if [ -d "$OMARCHY_CONFIG_DIR" ]; then
+  RUNNING_OMARCHY=true
+else
+  RUNNING_OMARCHY=false
+fi
+
 # the list of packages that can be installed
 ALL_PACKAGES=(
   "dev"
@@ -58,6 +67,7 @@ fi
 # import some core functions shared with other scripts
 source "$(dirname "$0")/core.sh"
 
+
 # Cleanup on exit
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   trap unmountDriveOnCleanup EXIT
@@ -72,6 +82,10 @@ if [[ "$OSTYPE" == darwin* ]]; then
 fi
 
 installHomebrew() {
+  if [[ "$OSTYPE" != darwin* ]]; then
+    return
+  fi
+
   echo "Installing homebrew..."
   if ! command -v brew &>/dev/null; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -87,6 +101,14 @@ installHomebrew() {
 
 installDeveloperTools() {
   echo "Installing developer tools..."
+
+  if [[ "$RUNNING_OMARCHY" == true ]]; then
+    echo "Detected Omarchy environment — minimal install."
+    # install what we need - figure out what is not installed by default
+    sudo pacman -S --noconfirm nginx deno
+    return
+  fi
+
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
     sudo apt install -y git curl build-essential wget gpg nginx
@@ -100,8 +122,17 @@ installDeveloperTools() {
   curl -fsSL https://deno.land/install.sh | sh
 }
 
-installShell() {
-  echo "Installing zsh and utilities..."
+installTerminal() {
+  echo "Installing terminal and shell utilities..."
+
+  if [[ "$RUNNING_OMARCHY" == true ]]; then
+    echo "Detected Omarchy environment — installing direnv."
+    # install what we need - figure out what is not installed by default
+    sudo pacman -S --noconfirm direnv
+    return
+  fi
+
+
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
     sudo apt install -y zsh tmux direnv fzf bat
@@ -113,10 +144,7 @@ installShell() {
     echo "Install tmux, direnv, fzf, starship"
     brew install tmux direnv fzf starship
   fi
-}
 
-installTerminal() {
-  installShell
   if [[ "$OSTYPE" == darwin* ]]; then
     echo "Installing ghostty..."
     brew install --cask ghostty
@@ -130,6 +158,12 @@ installFonts() {
 }
 
 configureDotFiles() {
+  if [[ "$RUNNING_OMARCHY" == true ]]; then
+    echo "Omarchy detected - copying a default .bashrc file"
+    cp ".bashrc_omarchy" "$HOME/.bashrc"
+    return
+  fi
+
   FILES=(
     ".bashrc"
     ".profile"
@@ -166,8 +200,10 @@ configureDotFiles() {
 }
 
 installVSCode() {
-  # install VS code
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  if [[ "$RUNNING_OMARCHY" == true ]]; then
+    echo "Omarchy detected - installing visual-studio-code-bin"
+    sudo pacman -Syu --noconfirm visual-studio-code-bin
+  elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     echo "Adding Microsoft repository for VS Code..."
     wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
     sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/
@@ -185,8 +221,10 @@ installVSCode() {
   fi
 
   # copy the pdf with the key files into my .dotfiles directory 
-  mkdir -p "$DOTFILES_DIR"
-  cp "vscode-keyboard-shortcuts-macos.pdf" "$DOTFILES_DIR/"
+  if [[ "$RUNNING_OMARCHY" != true ]]; then
+    mkdir -p "$DOTFILES_DIR"
+    cp "vscode-keyboard-shortcuts-macos.pdf" "$DOTFILES_DIR/"
+  fi
 
   # install extensions
   if [ -f "vscode-extensions.txt" ]; then
@@ -203,6 +241,13 @@ installVSCode() {
 }
 
 configureApps() {
+  if [[ "$RUNNING_OMARCHY" == true ]]; then
+    echo "Omarchy detected - configuring visual studio"
+    VSCODE_USER_DIR="$CONFIG_DIR/Code/User"
+    cp "vscode_settings.json" "$VSCODE_USER_DIR/settings.json"
+    return
+  fi
+
   # set default configuration
   cp "vscode_settings.json" "$DOTFILES_DIR"
   cp "ghostty.conf" "$DOTFILES_DIR"
@@ -252,7 +297,9 @@ configureSecrets() {
 
   # configure our .ssh directory with the secrets from the USB stick
   MOUNT_POINT="/media/veracrypt1"
-  if [[ "$OSTYPE" == darwin* ]]; then
+  if [[ "$RUNNING_OMARCHY" == true ]]; then
+    MOUNT_POINT="/run/media/veracrypt1"
+  elif [[ "$OSTYPE" == darwin* ]]; then
     MOUNT_POINT="/Volumes/BJORN_DEV_MAC"
   fi
 
@@ -267,6 +314,7 @@ configureSecrets() {
   else
     echo "Mount point $MOUNT_POINT is not mounted. Skipping SSH secrets copy."
   fi
+
 }
 
 installNode() {
@@ -277,7 +325,7 @@ installNode() {
   fi
 
   # Load NVM (for current shell + script)
-  export NVM_DIR="$HOME/.nvm"
+  export NVM_DIR="$HOME/.config/nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
@@ -287,7 +335,7 @@ installNode() {
   echo "Using node 16 as the default"
   nvm use default
 
-  # make sure we can run trailguide on https 
+  # # make sure we can run trailguide on https 
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo setcap 'cap_net_bind_service=+ep' "$(which node)"
   fi
@@ -295,6 +343,11 @@ installNode() {
 
 checkoutProjects() {
   echo "Cloning my projects..."
+
+  # mount our secret drive with the keys
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    mountSecretDrive
+  fi
 
   PROJECTS=(
     "kvande"
@@ -350,7 +403,9 @@ checkoutProjects() {
   fi
 
   MOUNT_POINT="/media/veracrypt1"
-  if [[ "$OSTYPE" == darwin* ]]; then
+  if [[ "$RUNNING_OMARCHY" == true ]]; then
+    MOUNT_POINT="/run/media/veracrypt1"
+  elif [[ "$OSTYPE" == darwin* ]]; then
     MOUNT_POINT="/Volumes/BJORN_DEV_MAC"
   fi
 
@@ -382,7 +437,10 @@ checkoutProjects() {
 }
 
 installAndStartMongoDB() {
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  if [[ "$RUNNING_OMARCHY" == true ]]; then
+    echo "Not installing mongodb on omarchy yet..."
+    # do nothing yet
+  elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
     sudo apt-get update
@@ -453,9 +511,11 @@ bootstrap() {
     installAndStartMongoDB
   fi
 
-  # make zsh the default shell 
-  if [ "$SHELL" != "$(which zsh)" ]; then
-    chsh -s "$(which zsh)"
+  # make zsh the default shell
+  if [[ "$RUNNING_OMARCHY" != true ]]; then
+    if [ "$SHELL" != "$(which zsh)" ]; then
+      chsh -s "$(which zsh)"
+    fi
   fi
 }
 
