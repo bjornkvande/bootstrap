@@ -438,8 +438,9 @@ checkoutProjects() {
 
 installAndStartMongoDB() {
   if [[ "$RUNNING_OMARCHY" == true ]]; then
-    echo "Not installing mongodb on omarchy yet..."
-    # do nothing yet
+    echo "Installing mongodb tools..."
+    yay -S --noconfirm mongodb-tools-bin
+    yay -S --noconfirm mongosh-bin
   elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
