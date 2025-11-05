@@ -159,8 +159,10 @@ installFonts() {
 
 configureDotFiles() {
   if [[ "$RUNNING_OMARCHY" == true ]]; then
-    echo "Omarchy detected - copying a default .bashrc file"
+    echo "Omarchy detected - copying config files"
     cp ".bashrc_omarchy" "$HOME/.bashrc"
+    cp bindings.conf "$HOME/.config/hypr/bindings.conf"
+    hyprctl reload
     return
   fi
 
