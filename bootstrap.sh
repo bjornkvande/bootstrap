@@ -128,7 +128,7 @@ installTerminal() {
   if [[ "$RUNNING_OMARCHY" == true ]]; then
     echo "Detected Omarchy environment — installing direnv."
     # install what we need - figure out what is not installed by default
-    sudo pacman -S --noconfirm direnv
+    sudo pacman -S --noconfirm direnv nano
     return
   fi
 
