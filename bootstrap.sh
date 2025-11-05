@@ -438,9 +438,25 @@ checkoutProjects() {
 
 installAndStartMongoDB() {
   if [[ "$RUNNING_OMARCHY" == true ]]; then
+    echo "Installing the mongo database using docker..."
+    if [ "$(docker ps -aq -f name=mongodb)" ]; then
+      echo "Removing existing mongodb container..."
+      docker rm -f mongodb 2>/dev/null || true
+    fi
+    docker pull mongo:6
+    MONGO_DATA_DIR="$HOME/mongo-data"
+    mkdir -p "$MONGO_DATA_DIR"
+    chmod -R 750 "$MONGO_DATA_DIR"
+    echo "Starting mongodb on port 27017..."
+    docker run --name mongodb -p 27017:27017 -v "$MONGO_DATA_DIR:/data/db" -d mongo:6
+    echo "Started..."
     echo "Installing mongodb tools..."
-    yay -S --noconfirm mongodb-tools-bin
-    yay -S --noconfirm mongosh-bin
+    if ! pacman -Qi mongodb-tools-bin &>/dev/null; then
+      yay -S --noconfirm mongodb-tools-bin
+    fi
+    if ! pacman -Qi mongosh-bin &>/dev/null; then
+      yay -S --noconfirm mongosh-bin
+    fi
   elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
@@ -453,6 +469,21 @@ installAndStartMongoDB() {
     # # # Install MongoDB 4.4
     # # echo "Installing MongoDB 4.4..."
     # # brew install mongodb-community@4.4
+  fi
+
+  # we need older mongodb tools for trailguide 
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    echo "Installing older MongoDB tools for Trailguide..."
+    # TARBALL="mongodb-linux-x86_64-3.0.15.tgz"
+    MONGO="mongodb-linux-x86_64-3.6.20"
+    TARBALL="$MONGO.tgz"
+    if [ ! -f "$TARBALL" ]; then
+      curl -L "https://fastdl.mongodb.org/linux/$TARBALL" -o "$TARBALL"
+    fi
+    mkdir -p "$HOME/.local"
+    tar -xvf "$TARBALL"
+    rm -rf "$HOME/.local/mongo"
+    mv "$MONGO" "$HOME/.local/mongo"
   fi
 }
 
