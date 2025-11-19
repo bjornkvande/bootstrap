@@ -64,6 +64,7 @@ if [ "$#" -ge 1 ]; then
   fi
 fi
 
+
 # import some core functions shared with other scripts
 source "$(dirname "$0")/core.sh"
 
@@ -80,6 +81,11 @@ CONFIG_DIR="$LINUX_CONFIG_DIR"
 if [[ "$OSTYPE" == darwin* ]]; then
   CONFIG_DIR="$HOME/Library/Application Support"
 fi
+
+if [[ "$RUNNING_OMARCHY" == true ]]; then
+  sudo pacman -Sy
+fi
+
 
 installHomebrew() {
   if [[ "$OSTYPE" != darwin* ]]; then
@@ -311,7 +317,7 @@ configureSecrets() {
     chmod 700 ~/.ssh
     chmod 600 ~/.ssh/id_*
     chmod 644 ~/.ssh/id_*.pub
-    chmod 644 ~/.ssh/known_hosts
+    chmod 644 ~/.ssh/known_hosts || true
     chmod 644 ~/.ssh/config
   else
     echo "Mount point $MOUNT_POINT is not mounted. Skipping SSH secrets copy."
@@ -445,12 +451,16 @@ installAndStartMongoDB() {
       echo "Removing existing mongodb container..."
       docker rm -f mongodb 2>/dev/null || true
     fi
-    docker pull mongo:6
+    # mongodb version 6 does not work on older xeon hardware
+    # VERSION=6
+    # VERSION=5
+    VERSION=4.4
+    docker pull "mongo:$VERSION"
     MONGO_DATA_DIR="$HOME/mongo-data"
     mkdir -p "$MONGO_DATA_DIR"
-    chmod -R 750 "$MONGO_DATA_DIR"
+    chmod -R 750 "$MONGO_DATA_DIR" || true
     echo "Starting mongodb on port 27017..."
-    docker run --name mongodb -p 27017:27017 -v "$MONGO_DATA_DIR:/data/db" -d mongo:6
+    docker run --name mongodb -p 27017:27017 -v "$MONGO_DATA_DIR:/data/db" -d "mongo:$VERSION"
     echo "Started..."
     echo "Installing mongodb tools..."
     if ! pacman -Qi mongodb-tools-bin &>/dev/null; then
@@ -474,19 +484,19 @@ installAndStartMongoDB() {
   fi
 
   # we need older mongodb tools for trailguide 
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    echo "Installing older MongoDB tools for Trailguide..."
-    # TARBALL="mongodb-linux-x86_64-3.0.15.tgz"
-    MONGO="mongodb-linux-x86_64-3.6.20"
-    TARBALL="$MONGO.tgz"
-    if [ ! -f "$TARBALL" ]; then
-      curl -L "https://fastdl.mongodb.org/linux/$TARBALL" -o "$TARBALL"
-    fi
-    mkdir -p "$HOME/.local"
-    tar -xvf "$TARBALL"
-    rm -rf "$HOME/.local/mongo"
-    mv "$MONGO" "$HOME/.local/mongo"
-  fi
+  # if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  #   echo "Installing older MongoDB tools for Trailguide..."
+  #   # TARBALL="mongodb-linux-x86_64-3.0.15.tgz"
+  #   MONGO="mongodb-linux-x86_64-3.6.20"
+  #   TARBALL="$MONGO.tgz"
+  #   if [ ! -f "$TARBALL" ]; then
+  #     curl -L "https://fastdl.mongodb.org/linux/$TARBALL" -o "$TARBALL"
+  #   fi
+  #   mkdir -p "$HOME/.local"
+  #   tar -xvf "$TARBALL"
+  #   rm -rf "$HOME/.local/mongo"
+  #   mv "$MONGO" "$HOME/.local/mongo"
+  # fi
 }
 
 bootstrap() {
@@ -494,6 +504,7 @@ bootstrap() {
     echo "Unsupported OS: $OSTYPE"
     exit 1
   fi
+
 
   if [[ " ${PACKAGES[@]} " =~ " dev " ]]; then
     echo -e "\nInstalling developer essentials..."
@@ -552,6 +563,7 @@ bootstrap() {
     fi
   fi
 }
+
 
 # try to bootstrap our new machine
 bootstrap
