@@ -134,14 +134,14 @@ installTerminal() {
   if [[ "$RUNNING_OMARCHY" == true ]]; then
     echo "Detected Omarchy environment — installing direnv."
     # install what we need - figure out what is not installed by default
-    sudo pacman -S --noconfirm direnv nano rsync
+    sudo pacman -S --noconfirm direnv nano rsync yazi
     return
   fi
 
 
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
-    sudo apt install -y zsh tmux direnv fzf bat
+    sudo apt install -y zsh tmux direnv fzf bat yazi
   elif [[ "$OSTYPE" == darwin* ]]; then
     installHomebrew
     brew update
