@@ -42,5 +42,10 @@ chrome_addr=$(find_window "google-chrome")
 [ -z "$code_addr" ] && echo "Code not found" && exit 1
 [ -z "$chrome_addr" ] && echo "Chrome not found" && exit 1
 
+# resize them to my liking
+hyprctl dispatch focuswindow address:$ghostty_addr
+hyprctl dispatch resizeactive exact 22% 100%
+
 # focus the editor
 hyprctl dispatch focuswindow address:$code_addr
+hyprctl dispatch resizeactive exact 45% 100%
