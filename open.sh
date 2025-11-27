@@ -44,6 +44,7 @@ hyprctl dispatch workspace "$WS"
 
 openProject() {
   # open the apps I want 
+  cd "$HOME/projects/$PROJECT"
   ghostty &
   ghostty_addr=$(wait_for_window "com.mitchellh.ghostty")
   code "$HOME/projects/$PROJECT" &
