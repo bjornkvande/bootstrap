@@ -5,12 +5,12 @@
 
 # figure out if we are runnin on omarchy
 # in that case, we install a lot less packages
-# OMARCHY_CONFIG_DIR="$HOME/.config/omarchy"
-# if [ -d "$OMARCHY_CONFIG_DIR" ]; then
-#   RUNNING_OMARCHY=true
-# else
-#   RUNNING_OMARCHY=false
-# fi
+OMARCHY_CONFIG_DIR="$HOME/.config/omarchy"
+if [ -d "$OMARCHY_CONFIG_DIR" ]; then
+  RUNNING_OMARCHY=true
+else
+  RUNNING_OMARCHY=false
+fi
 
 MOUNT_POINT="/media/veracrypt1"
 
