@@ -167,6 +167,7 @@ configureDotFiles() {
   if [[ "$RUNNING_OMARCHY" == true ]]; then
     echo "Omarchy detected - copying config files"
     cp ".bashrc_omarchy" "$HOME/.bashrc"
+    cp ".aliases" "$HOME/.aliases"
     cp bindings.conf "$HOME/.config/hypr/bindings.conf"
     hyprctl reload
     return

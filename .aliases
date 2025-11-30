@@ -6,3 +6,8 @@ alias l='ls -CF'
 alias ghosty='ghostty'
 alias keys="open ~/.dotfiles/vscode-keyboard-shortcuts-macos.pdf"
 alias mem='ps -caxo rss,comm | grep node | awk '\''{sum += $1} END {print sum/1024 " MB"}'\'''
+
+alias tg="~/projects/bootstrap/open.sh trailguide 2"
+alias skiguide="~/projects/bootstrap/open.sh skiguide 3"
+alias sjogg="~/projects/bootstrap/open.sh sjogg 4"
+alias bootstrap="~/projects/bootstrap/open.sh bootstrap 5"
