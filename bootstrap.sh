@@ -344,7 +344,7 @@ installNode() {
   echo "Using node 16 as the default"
   nvm use default
 
-  # # make sure we can run trailguide on https 
+  # make sure we can run trailguide on https 
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo setcap 'cap_net_bind_service=+ep' "$(which node)"
   fi

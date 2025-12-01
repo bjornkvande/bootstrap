@@ -1,51 +1,32 @@
-format = """
-$os\
-$hostname\
-[](bg:#DA627D fg:#444444)\
-$directory\
-[](fg:#DA627D bg:#FCA17D)\
-$git_branch\
-$git_status\
-[\n→ ](fg:#FCA17D)\
-"""
+add_newline = true
+command_timeout = 200
+format = "[$directory$git_branch$git_status]($style)$character"
 
-[os]
-disabled = false
-style = "fg:#bbbbbb bg:#444444"
-
-[os.symbols]
-Windows = ""
-Ubuntu = "󰕈"
-SUSE = ""
-Raspbian = "󰐿"
-Mint = "󰣭"
-Macos = "󰀵"
-Manjaro = ""
-Linux = "󰌽"
-Gentoo = "󰣨"
-Fedora = "󰣛"
-Alpine = ""
-Amazon = ""
-Android = ""
-Arch = "󰣇"
-Artix = "󰣇"
-CentOS = ""
-Debian = "󰣚"
-Redhat = "󱄛"
-RedHatEnterprise = "󱄛"
-
-[hostname]
-ssh_only = false
-format = '[ $hostname ](fg:#bbbbbb bg:#444444)'
+[character]
+error_symbol = "[✗](bold cyan)"
+success_symbol = "[❯](bold cyan)"
 
 [directory]
-format = "[ $path ](fg:black bg:#DA627D)"
-truncation_length = 3
+truncation_length = 2
 truncation_symbol = "…/"
+repo_root_style = "bold cyan"
+repo_root_format = "[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
 
 [git_branch]
-symbol = ""
-format = '[ $symbol $branch](fg:black bg:#FCA17D)'
+format = "[$branch]($style) "
+style = "italic cyan"
 
 [git_status]
-format = '[ $all_status$ahead_behind](fg:black bg:#FCA17D)'
+format = '[$all_status]($style)'
+style = "cyan"
+ahead = "⇡${count} "
+diverged = "⇕⇡${ahead_count}⇣${behind_count} "
+behind = "⇣${count} "
+conflicted = " "
+up_to_date = " "
+untracked = "? "
+modified = " "
+stashed = ""
+staged = ""
+renamed = ""
+deleted = ""
