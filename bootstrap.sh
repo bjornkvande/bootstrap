@@ -499,26 +499,70 @@ installAndStartMongoDB() {
     sudo systemctl enable mongod
     sudo systemctl start mongod
   elif [[ "$OSTYPE" == darwin* ]]; then
-    echo "Installing MongoDB on Mac is not implemented yet..."
-    # # # Install MongoDB 4.4
-    # # echo "Installing MongoDB 4.4..."
-    # # brew install mongodb-community@4.4
-  fi
+    echo "Installing MongoDB using Homebrew..."
 
-  # we need older mongodb tools for trailguide 
-  # if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  #   echo "Installing older MongoDB tools for Trailguide..."
-  #   # TARBALL="mongodb-linux-x86_64-3.0.15.tgz"
-  #   MONGO="mongodb-linux-x86_64-3.6.20"
-  #   TARBALL="$MONGO.tgz"
-  #   if [ ! -f "$TARBALL" ]; then
-  #     curl -L "https://fastdl.mongodb.org/linux/$TARBALL" -o "$TARBALL"
-  #   fi
-  #   mkdir -p "$HOME/.local"
-  #   tar -xvf "$TARBALL"
-  #   rm -rf "$HOME/.local/mongo"
-  #   mv "$MONGO" "$HOME/.local/mongo"
-  # fi
+    if ! command -v brew >/dev/null 2>&1; then
+      echo "Homebrew is required but not installed."
+      exit 1
+    fi
+
+    # Apple silicon requires version 6 or later
+    VERSION=7.0
+
+    echo "Adding MongoDB tap..."
+    brew tap mongodb/brew
+    brew update
+
+    # Install MongoDB if missing
+    echo "Installing mongodb-community@$VERSION..."
+    if ! brew list mongodb-community@$VERSION >/dev/null 2>&1; then
+      brew install mongodb-community@$VERSION
+    fi
+
+    # Ensure our database folder is in our home folder
+    MONGO_DATA_DIR="$HOME/mongo-data"
+    mkdir -p "$MONGO_DATA_DIR"
+
+    # Make sure the database actually uses the home database folder
+    CONFIG="$(brew --prefix)/etc/mongod.conf"
+    if [ -f "$CONFIG" ]; then
+      if grep -q "^ *dbPath:" "$CONFIG"; then
+        sed -i '' "s|^ *dbPath:.*|  dbPath: $MONGO_DATA_DIR|" "$CONFIG"
+      else
+        echo "  dbPath: $MONGO_DATA_DIR" >> "$CONFIG"
+      fi
+    else
+      echo "Creating MongoDB config file..."
+      mkdir -p "$(brew --prefix)/etc"
+      cat > "$CONFIG" <<EOF
+storage:
+  dbPath: $MONGO_DATA_DIR
+
+net:
+  bindIp: 127.0.0.1
+  port: 27017
+EOF
+    fi
+
+    echo "Starting MongoDB service..."
+    if ! brew services list | grep -q "mongodb-community@$VERSION.*started"; then
+      brew services start mongodb-community@$VERSION
+    fi
+
+    # Install mongosh (modern shell) if missing
+    echo "Installing MongoDB CLI tools..."
+    if ! command -v mongosh >/dev/null 2>&1; then
+      brew install mongosh
+    fi
+
+    # older tools like mongoimport, mongodump
+    if ! command -v mongodump >/dev/null 2>&1; then
+      brew install mongodb-database-tools
+    fi
+
+    echo "MongoDB $VERSION installed and started."
+    echo "Database is stored in: $MONGO_DATA_DIR"
+  fi
 }
 
 bootstrap() {
