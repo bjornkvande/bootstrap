@@ -124,6 +124,7 @@ installDeveloperTools() {
     brew update
     echo "Install git, wget, gnupg, nginx"
     brew install git wget gnupg nginx
+    brew install pkg-config cairo pango libpng jpeg giflib pixman
   fi
   curl -fsSL https://deno.land/install.sh | sh
 }
@@ -334,9 +335,14 @@ installNode() {
   fi
 
   # Load NVM (for current shell + script)
-  export NVM_DIR="$HOME/.config/nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  export NVM_DIR="$HOME/.nvm"
+  if [ -s "$NVM_DIR/nvm.sh" ]; then
+    . "$NVM_DIR/nvm.sh"
+  fi
+
+  if [ -s "$NVM_DIR/bash_completion" ]; then
+    . "$NVM_DIR/bash_completion"
+  fi
 
   # currently we use node 16 as our default version globally 
   nvm install 16
