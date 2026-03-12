@@ -371,6 +371,7 @@ checkoutProjects() {
     "skiguide"
     "trailguide.no"
     "kvande.com"
+    "esnow.app"
   ) 
 
   # make sure the projects directory exists 
@@ -382,17 +383,23 @@ checkoutProjects() {
 
   # check out the projects if not already checked out
   for project in "${PROJECTS[@]}"; do
-    PROJECT_PATH="$PROJECTS_DIR/$project"
+    echo "Project: $project..."
+    # special case: avoid .app directory name on macOS
+    if [ "$project" = "esnow.app" ]; then
+      dir="esnow"
+    fi
+
+    PROJECT_PATH="$PROJECTS_DIR/$dir"
     if [ ! -d "$PROJECT_PATH" ]; then
-      echo "Cloning $project..."
+      echo "Cloning $project into $dir..."
       git clone "git@github.com:bjornkvande/$project.git" "$PROJECT_PATH"
     else
-      echo "$project is already checked out."
+      echo "$dir is already checked out."
     fi
 
     # Check for submodules and init/update if present
     if [ -f "$PROJECT_PATH/.gitmodules" ]; then
-      echo "Syncing and initializing submodules for $project..."
+      echo "Syncing and initializing submodules for $dir..."
       (
         cd "$PROJECT_PATH"
         git submodule sync --recursive
@@ -447,6 +454,14 @@ checkoutProjects() {
     if mount | grep -q "$MOUNT_POINT"; then
       echo "Copying secret keys for skiguide..."
       cp "$MOUNT_POINT"/secrets/skiguide/.envrc_secrets "$PROJECTS_DIR/skiguide/.envrc_secrets"
+    fi
+  fi
+
+  # prepare keys for the esnow project
+  if [ -d "$PROJECTS_DIR/esnow" ]; then
+    if mount | grep -q "$MOUNT_POINT"; then
+      echo "Copying secret keys for esnow..."
+      cp "$MOUNT_POINT"/secrets/esnow/.envrc_secrets "$PROJECTS_DIR/esnow/.envrc_secrets"
     fi
   fi
 }
