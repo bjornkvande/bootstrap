@@ -462,6 +462,7 @@ checkoutProjects() {
     if mount | grep -q "$MOUNT_POINT"; then
       echo "Copying secret keys for esnow..."
       cp "$MOUNT_POINT"/secrets/esnow/.envrc_secrets "$PROJECTS_DIR/esnow/.envrc_secrets"
+      cp "$MOUNT_POINT"/secrets/esnow/.env.local "$PROJECTS_DIR/esnow/frontend/.env.local"
     fi
   fi
 }
