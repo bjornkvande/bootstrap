@@ -46,6 +46,7 @@ if $RUNNNING_WSL; then
     "terminal"
     "node"
     "projects"
+    "mongo"
   )
 else
   ALL_PACKAGES=(
@@ -519,12 +520,28 @@ installAndStartMongoDB() {
       yay -S --noconfirm mongosh-bin
     fi
   elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-    echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-    sudo apt-get update
-    sudo apt-get install -y mongodb-org
-    sudo systemctl enable mongod
-    sudo systemctl start mongod
+    if [[ "$RUNNING_WSL" == true ]]; then
+      # WSL install
+      echo "Installing MongoDB 8 in WSL..."
+      wget -qO - https://pgp.mongodb.com/server-8.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-8.gpg --dearmor
+      echo "deb [ arch=amd64 signed-by=/usr/share/keyrings/mongodb-server-8.gpg ] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.list
+      sudo apt update
+      sudo apt install -y mongodb-org
+      MONGO_DATA_DIR="$HOME/mongodb-data"
+      mkdir -p "$MONGO_DATA_DIR"
+      echo "Starting MongoDB manually in WSL..."
+      nohup mongod --dbpath "$MONGO_DATA_DIR" > "$HOME/mongodb.log" 2>&1 &
+      echo "MongoDB started in WSL. Data directory: $MONGO_DATA_DIR"
+    else 
+      # Native ubuntu install
+      echo "Installing MongoDB 8 on Linux..."
+      wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+      echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+      sudo apt-get update
+      sudo apt-get install -y mongodb-org
+      sudo systemctl enable mongod
+      sudo systemctl start mongod
+    fi
   elif [[ "$OSTYPE" == darwin* ]]; then
     echo "Installing MongoDB using Homebrew..."
 
