@@ -31,19 +31,35 @@ else
   RUNNING_OMARCHY=false
 fi
 
+# figure out if we are running within Window Subsystem for Linux (WSL)
+RUNNING_WSL=false
+if grep -qi microsoft /proc/version; then
+  echo "Running inside WSL"
+  RUNNING_WSL=true
+fi
+
 # the list of packages that can be installed
-ALL_PACKAGES=(
-  "dev"
-  "terminal"
-  "fonts"
-  "dotfiles"
-  "vscode"
-  "config"
-  "secrets"
-  "node"
-  "projects"
-  "mongo"
-)
+if $RUNNNING_WSL; then
+  ALL_PACKAGES=(
+    "dotfiles"
+    "dev"
+    "terminal"
+  )
+else
+  ALL_PACKAGES=(
+    "dev"
+    "terminal"
+    "fonts"
+    "dotfiles"
+    "vscode"
+    "config"
+    "secrets"
+    "node"
+    "projects"
+    "mongo"
+  )
+fi
+
 PACKAGES=("${ALL_PACKAGES[@]}")
 
 # by default all packages are installed, but we can specify which ones to install
@@ -126,7 +142,11 @@ installDeveloperTools() {
     brew install git wget gnupg nginx
     brew install pkg-config cairo pango libpng jpeg giflib pixman
   fi
-  curl -fsSL https://deno.land/install.sh | sh
+
+  # install deno if not there already
+  if ! command -v deno >/dev/null 2>&1; then
+    curl -fsSL https://deno.land/install.sh | sh
+  fi
 }
 
 installTerminal() {
@@ -572,6 +592,12 @@ bootstrap() {
     exit 1
   fi
 
+  # we want to have these first, because some of the others
+  # might write path information to our .bash files etc
+  if [[ " ${PACKAGES[@]} " =~ " dotfiles " ]]; then
+    echo -e "\nSetting up home directory dot files..."
+    configureDotFiles
+  fi
 
   if [[ " ${PACKAGES[@]} " =~ " dev " ]]; then
     echo -e "\nInstalling developer essentials..."
@@ -586,11 +612,6 @@ bootstrap() {
   if [[ " ${PACKAGES[@]} " =~ " terminal " ]]; then
     echo -e "\nInstalling terminals and shell utilities..."
     installTerminal
-  fi
-
-  if [[ " ${PACKAGES[@]} " =~ " dotfiles " ]]; then
-    echo -e "\nSetting up home directory dot files..."
-    configureDotFiles
   fi
 
   if [[ " ${PACKAGES[@]} " =~ " vscode " ]]; then
