@@ -44,6 +44,8 @@ if $RUNNNING_WSL; then
     "dotfiles"
     "dev"
     "terminal"
+    "node"
+    "projects"
   )
 else
   ALL_PACKAGES=(
@@ -380,7 +382,7 @@ checkoutProjects() {
   echo "Cloning my projects..."
 
   # mount our secret drive with the keys
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  if [[ "$OSTYPE" == "linux-gnu"* ]] && ! $RUNNING_WSL; then
     mountSecretDrive
   fi
 
@@ -404,12 +406,14 @@ checkoutProjects() {
   # check out the projects if not already checked out
   for project in "${PROJECTS[@]}"; do
     echo "Project: $project..."
+    dir=$project
     # special case: avoid .app directory name on macOS
     if [ "$project" = "esnow.app" ]; then
       dir="esnow"
     fi
 
     PROJECT_PATH="$PROJECTS_DIR/$dir"
+    echo $PROJECT_PATH
     if [ ! -d "$PROJECT_PATH" ]; then
       echo "Cloning $project into $dir..."
       git clone "git@github.com:bjornkvande/$project.git" "$PROJECT_PATH"
@@ -443,7 +447,9 @@ checkoutProjects() {
       fi
     )
   fi
+}
 
+copySecretProjectKeys() {
   MOUNT_POINT="/media/veracrypt1"
   if [[ "$RUNNING_OMARCHY" == true ]]; then
     MOUNT_POINT="/run/media/veracrypt1"
@@ -637,6 +643,9 @@ bootstrap() {
   if [[ " ${PACKAGES[@]} " =~ " projects " ]]; then
     echo -e "\nChecking out my projects..."
     checkoutProjects
+    if ! $RUNNING_WSL; then
+      copySecretProjectKeys
+    fi
   fi
 
   if [[ " ${PACKAGES[@]} " =~ " mongo " ]]; then
