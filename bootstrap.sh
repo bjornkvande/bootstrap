@@ -117,7 +117,7 @@ installDeveloperTools() {
 
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
-    sudo apt install -y git curl build-essential wget gpg nginx
+    sudo apt install -y git curl build-essential wget gpg nginx unzip
     sudo apt install -y apt-transport-https software-properties-common
   elif [[ "$OSTYPE" == darwin* ]]; then
     installHomebrew
@@ -142,7 +142,7 @@ installTerminal() {
 
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
-    sudo apt install -y zsh tmux direnv fzf bat yazi
+    sudo apt install -y zsh tmux direnv fzf bat
   elif [[ "$OSTYPE" == darwin* ]]; then
     installHomebrew
     brew update
