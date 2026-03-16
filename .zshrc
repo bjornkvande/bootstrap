@@ -1,7 +1,8 @@
-# configure the prompt
-if [[ "$(uname)" == "Darwin" ]]; then
+# Configure the prompt only if Starship is installed
+if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 else
+  # Fallback prompt
   PROMPT='%m:%~ %% '
 fi
 

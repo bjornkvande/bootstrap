@@ -41,9 +41,10 @@ fi
 # the list of packages that can be installed
 if $RUNNNING_WSL; then
   ALL_PACKAGES=(
-    "dotfiles"
     "dev"
     "terminal"
+    "dotfiles"
+    "config"
     "node"
     "projects"
     "mongo"
@@ -105,7 +106,6 @@ if [[ "$RUNNING_OMARCHY" == true ]]; then
   sudo pacman -Sy
 fi
 
-
 installHomebrew() {
   if [[ "$OSTYPE" != darwin* ]]; then
     return
@@ -166,6 +166,11 @@ installTerminal() {
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt update
     sudo apt install -y zsh tmux direnv fzf bat
+    # starship is used to configure the prompt
+    if ! command -v starship >/dev/null 2>&1; then
+      echo "Installing Starship..."
+      sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- -y
+    fi
   elif [[ "$OSTYPE" == darwin* ]]; then
     installHomebrew
     brew update
@@ -287,22 +292,26 @@ configureApps() {
   cp "starship.toml" "$DOTFILES_DIR"
 
   # visual studio code
-  echo "Configuring Visual Studio Code..."
-  VSCODE_USER_DIR="$CONFIG_DIR/Code/User"
-  mkdir -p "$VSCODE_USER_DIR"
-  if [ -e "$VSCODE_USER_DIR/settings.json" ] || [ -L "$VSCODE_USER_DIR/settings.json" ]; then
-    rm -f "$VSCODE_USER_DIR/settings.json"
+  if ! $RUNNING_WSL; then
+    echo "Configuring Visual Studio Code..."
+    VSCODE_USER_DIR="$CONFIG_DIR/Code/User"
+    mkdir -p "$VSCODE_USER_DIR"
+    if [ -e "$VSCODE_USER_DIR/settings.json" ] || [ -L "$VSCODE_USER_DIR/settings.json" ]; then
+      rm -f "$VSCODE_USER_DIR/settings.json"
+    fi
+    ln -s "$DOTFILES_DIR/vscode_settings.json" "$VSCODE_USER_DIR/settings.json"
   fi
-  ln -s "$DOTFILES_DIR/vscode_settings.json" "$VSCODE_USER_DIR/settings.json"
 
   # ghostty
-  echo "Configuring Ghostty..."
-  GHOSTTY_DIR="$CONFIG_DIR/com.mitchellh.ghostty"
-  mkdir -p "$GHOSTTY_DIR"
-  if [ -e "$GHOSTTY_DIR/config" ] || [ -L "$GHOSTTY_DIR/config" ]; then
-    rm -f "$GHOSTTY_DIR/config"
+  if ! $RUNNING_WSL; then
+    echo "Configuring Ghostty..."
+    GHOSTTY_DIR="$CONFIG_DIR/com.mitchellh.ghostty"
+    mkdir -p "$GHOSTTY_DIR"
+    if [ -e "$GHOSTTY_DIR/config" ] || [ -L "$GHOSTTY_DIR/config" ]; then
+      rm -f "$GHOSTTY_DIR/config"
+    fi
+    ln -s "$DOTFILES_DIR/ghostty.conf" "$GHOSTTY_DIR/config"
   fi
-  ln -s "$DOTFILES_DIR/ghostty.conf" "$GHOSTTY_DIR/config"
 
   # my prompt configuration by starship
   echo "Configuring Starship prompt..."
